@@ -6,6 +6,39 @@ With this integration, customers can securely store and manage SSH with Vault, a
 
 After properly configure SSH secret engine in Vault, then the connectivity and access in Appaegis, the Vault can be used as a CA within Appaegis.
 
+## Steps for Vault in HCP
+If you need to connect to Vault in HCP, there are a few extra steps, please take a look of their document, such as https://www.hashicorp.com/blog/vault-on-the-hashicorp-cloud-platform-ga.
+
+- Create HVN and peering with your VPC in AWS
+- Create Network within Appaegis cloud and get it connected with your VPC
+- Create Vault cluster
+- Install Vault binary on a VM within the VPC that is peered with HVN
+- On the VM setup environment variables before running Vault  
+  *Hint: you can copy paste the lines from your HCP Vault cluster's page*
+
+  ```sh
+  export VAULT_ADDR="[Cluster URL]"
+  export VAULT_NAMESPACE="admin"
+  export VAULT_TOKEN=[Root token of the cluster]
+  ```
+
+<details><summary>HCP screenshots</summary>  
+
+- Create HVN
+![](img/hcp/hcp-create-hvn.png)
+
+- Create peering
+![](img/hcp/hcp-hvn-peering.png)
+
+- Create Vault cluster
+![](img/hcp/hcp-create-cluster.png)
+
+- Vault cluster main view
+![](img/hcp/hcp-main.png)
+</details>
+<p></p>
+
+
 ## Configuration steps in Vault
 
 Below steps are just for reference, you should further customize your deployment.
@@ -88,9 +121,22 @@ Step 1
 Step 2
 
 - Enter the Vault information.
+  - Base URL  
+  This is the "Cluster URL" of your HCP Vault, or your Vault instance, in this format: https://myvault:8200
+  - Network  
+  The network you setup in order to reach your Vault server or the HCP Vault
+  - Namespace  
+  Needed for HCP Vault or Vault enterprise
+  - PATH for authentication  
+  Our example is "/v1/auth/approle/login". Your setting need to be consistent with the Vault authentication method you configured.
+  - Role ID / Secret ID  
+  When approle authentication is used, you need to provide these parameters
+  - PATH for SSH client key signing  
+  Our example is "/v1/ssh-client-signer/sign/my-role". Your setting need to be consistent with the Vault ssh-client-signer engine and role you configured.
+
 - Click "Save".
 
-![](img/vault_3.png)
+![](img/vault-setting.png)
 
 Step 3
 
