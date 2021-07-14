@@ -1,4 +1,4 @@
-# Appaegis and Hashicorp Vault Integration
+# Appaegis and HashiCorp Vault Integration
 
 Appaegis zero trust access cloud allows agentless access to SSH servers with enhanced SSH security through MFA integration, file download control and instant access, eliminating management overhead. Integration with HashiCorp Vault enables simplified key management, streamlines credential management, eliminates shared SSH accounts, and allows dynamic provisioning.
 
@@ -105,15 +105,22 @@ vault write -f auth/approle/role/my-role/secret-id
 
 ## Prepare SSH server
 
-Change your /etc/ssh/sshd_config file and specify a "TrustedUserCAKeys" file.
-Add a line into your "TrustedUserCAKeys" file, the content is the CA's public key.  
-Make sure restart SSH server after modifing.
+Change your `/etc/ssh/sshd_config` file to add a `TrustedUserCAKeys` option.
+Then add a line into your `TrustedUserCAKeys` file, the content is the CA's public key. 
+Make sure restart SSH server after modifing the `/etc/ssh/sshd_config` file.
+
+```sh
+# If you don't have a line for the "TrustedUserCAKeys" option, add it to the /etc/ssh/sshd_config file:
+sudo sh -c 'echo "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" >> /etc/ssh/sshd_config'
+# Add the CA certificate's public key to this file so your SSH server can find it (replace with your public key and description):
+sudo sh -c 'echo "ssh-rsa AAAAB3Nz... [key description]" >> /etc/ssh/trusted-user-ca-keys1.pem'
+```
 
 ## Configuration steps in Appaegis
 
 Step 1
 
-- Head over to Setting->Hashicorp Vault
+- Head over to Setting->HashiCorp Vault
 - Click "+Vault" to create a Vault profile.
 
 ![](img/vault_1.png)
