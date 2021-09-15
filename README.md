@@ -113,7 +113,7 @@ Make sure restart SSH server after modifing the `/etc/ssh/sshd_config` file.
   # If you don't have a line for the "TrustedUserCAKeys" option, add it to the /etc/ssh/sshd_config file:
   sudo sh -c 'echo "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" >> /etc/ssh/sshd_config'
   # Add the CA certificate's public key to this file so your SSH server can find it (replace with your public key and description):
-  sudo sh -c 'echo "ssh-rsa AAAAB3Nz... [key description]" >> /etc/ssh/trusted-user-ca-keys1.pem'
+  sudo sh -c 'echo "ssh-rsa AAAAB3Nz... [key description]" >> /etc/ssh/trusted-user-ca-keys.pem'
   ```
 
 ## Configuration steps in Appaegis
