@@ -16,7 +16,7 @@ If you need to connect to Vault in HCP, there are a few extra steps, please take
 - On the VM setup environment variables before running Vault  
   *Hint: you can copy paste the lines from your HCP Vault cluster's page*
 
-  ```sh
+  ```bash
   export VAULT_ADDR="[Cluster URL]"
   export VAULT_NAMESPACE="admin"
   export VAULT_TOKEN=[Root token of the cluster]
@@ -45,11 +45,11 @@ Below steps are just for reference, you should further customize your deployment
 
 - Enable the "SSH client signer" engine and create a profile that can be used to sign cert for any user.
 
-  ```sh
+  ```bash
   vault secrets enable -path=ssh-client-signer ssh
   ```
 
-  ```sh
+  ```bash
   vault write ssh-client-signer/roles/my-role -<<"EOH"
   {
   "allow_user_certificates": true,
@@ -70,17 +70,17 @@ Below steps are just for reference, you should further customize your deployment
 
 - Generate a CA as the signing key, record the CA's public key.
 
-  ```sh
+  ```bash
   vault write ssh-client-signer/config/ca generate_signing_key=true
   ```
 
 - Enable Approle authentication and add an admin user/profile, generate and record the RoleID and SecretID.
 
-  ```sh
+  ```bash
   vault auth enable approle
   ```
 
-  ```sh
+  ```bash
   # appaegis-pol.hcl
   path "ssh-client-signer/sign/my-role/*" {
     capabilities = [ "read", "list", "create", "update" ]
@@ -90,13 +90,13 @@ Below steps are just for reference, you should further customize your deployment
   }
   ```
 
-  ```sh
+  ```bash
   vault policy write appaegis appaegis-pol.hcl
   vault write auth/approle/role/my-role token_num_uses=100 token_ttl=20m \
   token_max_ttl=30m token_policies="appaegis"
   ```
 
-  ```sh
+  ```bash
   # get role id
   vault read auth/approle/role/my-role/role-id
   # get secret id
@@ -107,9 +107,11 @@ Below steps are just for reference, you should further customize your deployment
 
 Change your `/etc/ssh/sshd_config` file to add a `TrustedUserCAKeys` option.
 Then add a line into your `TrustedUserCAKeys` file, the content is the CA's public key. 
-Make sure restart SSH server after modifing the `/etc/ssh/sshd_config` file.
+Make sure restart SSH server after modifing the `/etc/ssh/sshd_config` file.  
+  
+:warning: The "TrustedUserCAKeys" option should appear __only once__ within the "/etc/ssh/sshd_config" file.
 
-  ```sh
+  ```bash
   # If you don't have a line for the "TrustedUserCAKeys" option, add it to the /etc/ssh/sshd_config file:
   sudo sh -c 'echo "TrustedUserCAKeys /etc/ssh/trusted-user-ca-keys.pem" >> /etc/ssh/sshd_config'
   # Add the CA certificate's public key to this file so your SSH server can find it (replace with your public key and description):
@@ -150,7 +152,7 @@ Step 2
 After the Vault detail is saved, you may want to check has it been connected with Appaegis Cloud. Click the newly created Vault setting, you should see the connection status similar to below if it is reachable.  
 If you need to debug this Vault integration, you can start with sending the authentication request manually, see this example copied from [HashiCorp document](https://www.vaultproject.io/docs/auth/approle#via-the-api).
 
-  ```sh
+  ```bash
   curl \
       --request POST \
       --data '{"role_id":"988a9df-...","secret_id":"37b74931..."}' \
